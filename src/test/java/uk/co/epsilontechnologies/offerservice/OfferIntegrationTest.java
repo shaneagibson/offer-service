@@ -51,6 +51,22 @@ public class OfferIntegrationTest {
         assertEquals(expectedResponseJson, response.getBody());
     }
 
+    @Test
+    public void shouldReceiveBadRequestIfDescriptionIsMissing() {
+
+        // arrange
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        final String requestJson = String.format("{\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", price, currency, expiryTime);
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange("/offers", HttpMethod.POST, requestEntity(requestJson), String.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
     private HttpEntity<String> requestEntity(final String body) {
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");

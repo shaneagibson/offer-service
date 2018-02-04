@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
@@ -14,9 +16,18 @@ import java.util.UUID;
 public class Offer {
 
     private final UUID id;
+
+    @NotNull
+    @Size(min = 3, max = 50)
     private final String description;
+
+    @NotNull
     private final BigDecimal price;
+
+    @NotNull
     private final Currency currency;
+
+    @NotNull
     private final Instant expiryTime;
 
     @JsonCreator

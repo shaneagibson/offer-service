@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.service.OfferService;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import javax.validation.Valid;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RequestMapping(path = "/offers")
@@ -23,7 +24,7 @@ public class OfferController {
     @RequestMapping(method = POST, consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Offer create(@RequestBody final Offer offer) {
+    public Offer create(@Valid @RequestBody final Offer offer) {
         return offerService.create(offer);
     }
 
