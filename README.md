@@ -28,4 +28,5 @@ You are required to create a simple RESTful software service that will allow a m
  - Implement authorization
  - Restructure the Query endpoint to support pagination
  - Enhance query parameters to support additional capabilities (i.e. query by description, expiry time, etc)
- - Introduce HATEOAS media type to provide clients with ability to cancel unexpired offers
+ - Introduce HATEOAS media type to provide clients with ability to cancel non-expired offers
+ - Add 
