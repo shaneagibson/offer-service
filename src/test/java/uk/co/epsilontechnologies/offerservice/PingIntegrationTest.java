@@ -13,13 +13,13 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PingIT {
+public class PingIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
-    public void shouldRecieveSuccessFromPingEndpoint() {
+    public void shouldReceiveSuccessFromPingEndpoint() {
         final ResponseEntity<String> response = restTemplate.getForEntity("/ping", String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
