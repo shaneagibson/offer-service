@@ -4,15 +4,13 @@ import org.springframework.stereotype.Repository;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.repository.OfferRepository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryOfferRepository implements OfferRepository {
 
-    private static final Map<UUID,Offer> offers = new HashMap<>();
+    private final Map<UUID,Offer> offers = new LinkedHashMap<>();
 
     @Override
     public Offer create(final Offer offer) {
@@ -36,6 +34,15 @@ public class InMemoryOfferRepository implements OfferRepository {
     @Override
     public void delete(final UUID id) {
         offers.remove(id);
+    }
+
+    @Override
+    public List<Offer> findByQuery(final Optional<Currency> currency) {
+        return offers
+                .values()
+                .stream()
+                .filter(offer -> !currency.isPresent() || currency.get().equals(offer.getCurrency()))
+                .collect(Collectors.toList());
     }
 
 }

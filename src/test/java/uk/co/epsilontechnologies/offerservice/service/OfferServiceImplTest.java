@@ -14,9 +14,7 @@ import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Currency;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -127,6 +125,22 @@ public class OfferServiceImplTest {
 
         // assert
         verify(mockOfferRepository, times(1)).delete(id);
+    }
+
+    @Test
+    public void shouldQueryForOffers() {
+
+        // arrange
+        final Offer offer1 = new Offer(UUID.randomUUID(), "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now());
+        final Offer offer2 = new Offer(UUID.randomUUID(), "some other description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now());
+        final List<Offer> offers = Arrays.asList(offer1, offer2);
+        when(mockOfferRepository.findByQuery(Optional.empty())).thenReturn(offers);
+
+        // act
+        final List<Offer> result = underTest.query(Optional.empty());
+
+        // assert
+        assertEquals(offers, result);
     }
 
     @Test

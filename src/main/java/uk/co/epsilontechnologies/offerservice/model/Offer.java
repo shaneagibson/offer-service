@@ -14,7 +14,6 @@ import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
-@JsonIgnoreProperties(value = { "expired" })
 public class Offer {
 
     private final UUID id;

@@ -2,6 +2,9 @@ package uk.co.epsilontechnologies.offerservice.service;
 
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 
+import java.util.Currency;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface OfferService {
@@ -13,5 +16,7 @@ public interface OfferService {
     Offer getById(UUID id);
 
     void cancel(UUID id);
+
+    List<Offer> query(Optional<Currency> currency);
 
 }

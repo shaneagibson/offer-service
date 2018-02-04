@@ -10,6 +10,9 @@ import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.service.OfferService;
 
 import javax.validation.Valid;
+import java.util.Currency;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -56,6 +59,14 @@ public class OfferController extends AbstractController {
     public void cancel(@PathVariable("id") final UUID id) {
         log.info(String.format("cancelling offer for id: %s", id));
         offerService.cancel(id);
+    }
+
+    @RequestMapping(method = GET, produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Offer> query(@RequestParam(value = "currency", required = false) final Optional<Currency> currency) {
+        log.info(String.format("querying for offers (filtered by currency: %s)", currency));
+        return offerService.query(currency);
     }
 
     @ExceptionHandler(OfferNotFoundException.class)

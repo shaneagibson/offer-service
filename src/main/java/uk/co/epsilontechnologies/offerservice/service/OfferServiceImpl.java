@@ -7,6 +7,9 @@ import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.repository.OfferRepository;
 import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
 
+import java.util.Currency;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,6 +62,11 @@ public class OfferServiceImpl implements OfferService {
                 throw new IllegalStateException("cannot cancel an offer that has expired");
             }
         });
+    }
+
+    @Override
+    public List<Offer> query(final Optional<Currency> currency) {
+        return offerRepository.findByQuery(currency);
     }
 
 }

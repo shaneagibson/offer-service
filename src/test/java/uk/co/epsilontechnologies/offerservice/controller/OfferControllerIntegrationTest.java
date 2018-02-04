@@ -42,7 +42,7 @@ public class OfferControllerIntegrationTest {
         final Offer offerToCreate = new Offer(null, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
         final Offer createdOffer = new Offer(UUID.randomUUID(), description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
         final String requestJson = String.format("{\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", description, price, currency, expiryTime);
-        final String expectedResponseJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", createdOffer.getId().toString(), description, price, currency, expiryTime);
+        final String expectedResponseJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\",\"expired\":false}", createdOffer.getId().toString(), description, price, currency, expiryTime);
         when(mockOfferService.create(offerToCreate)).thenReturn(createdOffer);
 
         // act
@@ -63,7 +63,7 @@ public class OfferControllerIntegrationTest {
         final String currency = "GBP";
         final String expiryTime = "2018-07-28T22:25:51Z";
         final Offer offer = new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
-        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\",\"expired\":false}", id, description, price, currency, expiryTime);
         when(mockOfferService.update(id, offer)).thenReturn(offer);
 
         // act
@@ -84,7 +84,7 @@ public class OfferControllerIntegrationTest {
         final String currency = "GBP";
         final String expiryTime = "2018-07-28T22:25:51Z";
         final Offer offer = new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
-        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\",\"expired\":false}", id, description, price, currency, expiryTime);
         when(mockOfferService.getById(id)).thenReturn(offer);
 
         // act
