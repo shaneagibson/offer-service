@@ -1,4 +1,4 @@
-package uk.co.epsilontechnologies.offerservice;
+package uk.co.epsilontechnologies.offerservice.controller;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PingIntegrationTest {
+public class PingControllerIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
