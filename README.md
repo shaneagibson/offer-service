@@ -12,15 +12,17 @@ You are required to create a simple RESTful software service that will allow a m
 
 ## Assumptions
 
+ - ISO-4217 standard is used for Currency Codes
  - ISO-8601 standard is used for Timestamp string representation
  - Syntatic validation uses JSR-303 Bean Validation API and produces error messages in Spring's default format
  - Semantic validation is implemented in the Service-layer
+ - Cancellation of an offer results in that resource being deleted (as opposed to having 'expired')
 
 ## Future Enhancements
 
  - Add non-functional requirements such as enhanced Logging / Auditing
  - Re-implement OfferRepository as a more suitable production-grade implementation (i.e. database persistence)
  - Add support for Transactional concerns
- - Format error messages to use a consistant JSON structure
+ - Add machine-readable error code to Error responses
  - Implement authorization
  - Restructure the Query endpoint to support pagination

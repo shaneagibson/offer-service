@@ -2,6 +2,7 @@ package uk.co.epsilontechnologies.offerservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.co.epsilontechnologies.offerservice.exception.OfferNotFoundException;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.repository.OfferRepository;
 import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
@@ -25,7 +26,7 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public Offer create(final Offer offer) {
         if (offer.getId() != null) {
-            throw new IllegalArgumentException("Cannot create an offer with a pre-populated 'id' value");
+            throw new IllegalArgumentException("cannot create an offer with a pre-populated 'id' value");
         }
         return offerRepository.create(
                 new Offer(
@@ -34,6 +35,19 @@ public class OfferServiceImpl implements OfferService {
                         offer.getPrice(),
                         offer.getCurrency(),
                         offer.getExpiryTime()));
+    }
+
+    @Override
+    public Offer update(final UUID id, final Offer offer) {
+        if (id == null || !id.equals(offer.getId())) {
+            throw new IllegalArgumentException("id in payload must match id from uri");
+        }
+        return offerRepository.update(offer);
+    }
+
+    @Override
+    public Offer getById(final UUID id) {
+        return offerRepository.findById(id).orElseThrow(() -> new OfferNotFoundException(id));
     }
 
 }

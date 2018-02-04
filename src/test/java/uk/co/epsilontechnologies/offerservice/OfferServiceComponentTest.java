@@ -51,6 +51,26 @@ public class OfferServiceComponentTest {
         assertEquals(expectedResponseJson, response.getBody());
     }
 
+    @Test
+    public void shouldReceiveSuccessFromUpdate() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final String description = "some-description";
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        when(mockUuidGenerator.generate()).thenReturn(id);
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id.toString()), HttpMethod.POST, requestEntity(offerJson), String.class);
+
+        // assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offerJson, response.getBody());
+    }
+
     private HttpEntity<String> requestEntity(final String body) {
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");

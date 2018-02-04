@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.co.epsilontechnologies.offerservice.exception.OfferNotFoundException;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.service.OfferService;
 
@@ -49,6 +50,63 @@ public class OfferControllerIntegrationTest {
         // assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expectedResponseJson, response.getBody());
+    }
+
+    @Test
+    public void shouldReceiveSuccessFromUpdate() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final String description = "some-description";
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        final Offer offer = new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
+        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        when(mockOfferService.update(id, offer)).thenReturn(offer);
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id), HttpMethod.POST, requestEntity(offerJson), String.class);
+
+        // assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offerJson, response.getBody());
+    }
+
+    @Test
+    public void shouldReceiveSuccessFromGetById() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final String description = "some-description";
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        final Offer offer = new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime));
+        final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        when(mockOfferService.getById(id)).thenReturn(offer);
+
+        // act
+        final ResponseEntity<String> response = restTemplate.getForEntity(String.format("/offers/%s", id), String.class);
+
+        // assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(offerJson, response.getBody());
+    }
+
+    @Test
+    public void shouldReceiveNotFoundFromGetByIdForUnknownId() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        when(mockOfferService.getById(id)).thenThrow(new OfferNotFoundException(id));
+
+        // act
+        final ResponseEntity<String> response = restTemplate.getForEntity(String.format("/offers/%s", id), String.class);
+
+        // assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(String.format("{\"error\":\"offer does not exist for id: %s\"}", id), response.getBody());
     }
 
     @Test

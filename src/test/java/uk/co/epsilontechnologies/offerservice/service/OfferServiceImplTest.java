@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import uk.co.epsilontechnologies.offerservice.exception.OfferNotFoundException;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.repository.OfferRepository;
 import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
@@ -13,6 +14,7 @@ import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +41,7 @@ public class OfferServiceImplTest {
     }
 
     @Test
-    public void shouldCreateOfferIfIdIsNotPopulated() {
+    public void shouldCreateValidOffer() {
 
         // arrange
         final UUID id = UUID.randomUUID();
@@ -68,6 +70,58 @@ public class OfferServiceImplTest {
 
         // act
         underTest.create(offer);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectOfferCreationIfIdInPayloadDoesntMatchIdInURI() {
+
+        // arrange
+        final Offer offer = new Offer(UUID.randomUUID(), "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now());
+
+        // act
+        underTest.update(UUID.randomUUID(), offer);
+    }
+
+    @Test
+    public void shouldUpdateValidOffer() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final Offer offer = new Offer(id, "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now());
+        when(mockOfferIdGenerator.generate()).thenReturn(id);
+        when(mockOfferRepository.update(offer)).thenReturn(offer);
+
+        // act
+        final Offer result = underTest.update(id, offer);
+
+        // assert
+        assertEquals(offer, result);
+    }
+
+    @Test
+    public void shouldGetOfferById() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final Offer offer = new Offer(id, "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now());
+        when(mockOfferRepository.findById(id)).thenReturn(Optional.of(offer));
+
+        // act
+        final Offer result = underTest.getById(id);
+
+        // assert
+        assertEquals(offer, result);
+    }
+
+    @Test(expected = OfferNotFoundException.class)
+    public void shouldThrowOfferNotFoundExceptionIfNoOfferExists() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        when(mockOfferRepository.findById(id)).thenReturn(Optional.empty());
+
+        // act
+        underTest.getById(id);
     }
 
 }
