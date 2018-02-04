@@ -1,6 +1,7 @@
 package uk.co.epsilontechnologies.offerservice.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
+@JsonIgnoreProperties(value = { "expired" })
 public class Offer {
 
     private final UUID id;
@@ -42,6 +44,10 @@ public class Offer {
         this.price = price;
         this.currency = currency;
         this.expiryTime = expiryTime;
+    }
+
+    public boolean isExpired() {
+        return this.expiryTime.isBefore(Instant.now());
     }
 
     public UUID getId() {

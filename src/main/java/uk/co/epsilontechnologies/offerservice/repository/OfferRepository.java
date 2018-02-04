@@ -13,4 +13,6 @@ public interface OfferRepository {
 
     Optional<Offer> findById(UUID id);
 
+    void delete(UUID id);
+
 }

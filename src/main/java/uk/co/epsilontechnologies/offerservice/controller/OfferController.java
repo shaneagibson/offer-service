@@ -1,6 +1,5 @@
 package uk.co.epsilontechnologies.offerservice.controller;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,11 +10,9 @@ import uk.co.epsilontechnologies.offerservice.model.Offer;
 import uk.co.epsilontechnologies.offerservice.service.OfferService;
 
 import javax.validation.Valid;
-
 import java.util.UUID;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(path = "/offers")
@@ -33,6 +30,7 @@ public class OfferController extends AbstractController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Offer create(@Valid @RequestBody final Offer offer) {
+        log.info(String.format("creating offer: %s", offer));
         return offerService.create(offer);
     }
 
@@ -40,6 +38,7 @@ public class OfferController extends AbstractController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Offer update(@PathVariable("id") final UUID id, @Valid @RequestBody final Offer offer) {
+        log.info(String.format("updating offer for id: %s to: %s", id, offer));
         return offerService.update(id, offer);
     }
 
@@ -47,7 +46,16 @@ public class OfferController extends AbstractController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Offer getById(@PathVariable("id") final UUID id) {
+        log.info(String.format("fetching offer for id: %s", id));
         return offerService.getById(id);
+    }
+
+    @RequestMapping(path = "/{id}", method = DELETE, produces = "application/json")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void cancel(@PathVariable("id") final UUID id) {
+        log.info(String.format("cancelling offer for id: %s", id));
+        offerService.cancel(id);
     }
 
     @ExceptionHandler(OfferNotFoundException.class)

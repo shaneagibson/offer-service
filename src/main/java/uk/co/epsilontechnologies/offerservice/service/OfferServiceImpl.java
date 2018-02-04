@@ -50,4 +50,15 @@ public class OfferServiceImpl implements OfferService {
         return offerRepository.findById(id).orElseThrow(() -> new OfferNotFoundException(id));
     }
 
+    @Override
+    public void cancel(final UUID id) {
+        offerRepository.findById(id).ifPresent(offer -> {
+            if (!offer.isExpired()) {
+                offerRepository.delete(id);
+            } else {
+                throw new IllegalStateException("cannot cancel an offer that has expired");
+            }
+        });
+    }
+
 }

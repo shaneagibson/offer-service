@@ -13,13 +13,14 @@ import uk.co.epsilontechnologies.offerservice.service.generator.IdGenerator;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Currency;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class OfferServiceImplTest {
@@ -112,6 +113,45 @@ public class OfferServiceImplTest {
         // assert
         assertEquals(offer, result);
     }
+
+    @Test
+    public void shouldCancelOfferById() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final Offer offer = new Offer(id, "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now().plus(1, ChronoUnit.HOURS));
+        when(mockOfferRepository.findById(id)).thenReturn(Optional.of(offer));
+
+        // act
+        underTest.cancel(id);
+
+        // assert
+        verify(mockOfferRepository, times(1)).delete(id);
+    }
+
+    @Test
+    public void shouldAllowForCancelOfOfferThatDoesntExistInOfferToProvideIdempotency() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        when(mockOfferRepository.findById(id)).thenReturn(Optional.empty());
+
+        // act
+        underTest.cancel(id);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldPreventCancellationOfOfferThatIsExpired() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final Offer offer = new Offer(id, "some description", new BigDecimal("100.00"), Currency.getInstance("GBP"), Instant.now().minus(1, ChronoUnit.HOURS));
+        when(mockOfferRepository.findById(id)).thenReturn(Optional.of(offer));
+
+        // act
+        underTest.cancel(id);
+    }
+
 
     @Test(expected = OfferNotFoundException.class)
     public void shouldThrowOfferNotFoundExceptionIfNoOfferExists() {

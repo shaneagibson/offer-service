@@ -18,7 +18,8 @@ import java.util.Currency;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -166,6 +167,37 @@ public class OfferControllerIntegrationTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("{\"error\":\"Something went wrong!\"}", response.getBody());
     }
+
+    @Test
+    public void shouldReceiveSuccessForCancel() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id), HttpMethod.DELETE, null, String.class);
+
+        // assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(mockOfferService, times(1)).cancel(id);
+    }
+
+    @Test
+    public void shouldReceiveBadRequestIfIllegalStateExceptionIsThrown() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        doThrow(new IllegalStateException("some error message")).when(mockOfferService).cancel(id);
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id), HttpMethod.DELETE, null, String.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("{\"error\":\"some error message\"}", response.getBody());
+    }
+
 
     private HttpEntity<String> requestEntity(final String body) {
         final HttpHeaders requestHeaders = new HttpHeaders();

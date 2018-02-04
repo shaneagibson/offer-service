@@ -22,7 +22,7 @@ public class InMemoryOfferRepository implements OfferRepository {
 
     @Override
     public Offer update(Offer offer) {
-        if (offers.putIfAbsent(offer.getId(), offer) != null) {
+        if (offers.putIfAbsent(offer.getId(), offer) == null) {
             throw new IllegalStateException(String.format("offer does not exist for id: %s", offer.getId()));
         }
         return offer;
@@ -31,6 +31,11 @@ public class InMemoryOfferRepository implements OfferRepository {
     @Override
     public Optional<Offer> findById(final UUID id) {
         return Optional.ofNullable(offers.get(id));
+    }
+
+    @Override
+    public void delete(final UUID id) {
+        offers.remove(id);
     }
 
 }

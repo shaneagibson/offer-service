@@ -2,7 +2,6 @@ package uk.co.epsilontechnologies.offerservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.co.epsilontechnologies.offerservice.model.Offer;
+import uk.co.epsilontechnologies.offerservice.repository.OfferRepository;
 import uk.co.epsilontechnologies.offerservice.service.generator.UUIDGenerator;
 
 import java.math.BigDecimal;
@@ -29,6 +29,9 @@ public class OfferServiceComponentTest {
 
     @MockBean
     private UUIDGenerator mockUuidGenerator;
+
+    @Autowired
+    private OfferRepository offerRepository;
 
     @Test
     public void shouldReceiveSuccessFromCreate() {
@@ -61,7 +64,7 @@ public class OfferServiceComponentTest {
         final String currency = "GBP";
         final String expiryTime = "2018-07-28T22:25:51Z";
         final String offerJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
-        when(mockUuidGenerator.generate()).thenReturn(id);
+        offerRepository.create(new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime)));
 
         // act
         final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id.toString()), HttpMethod.POST, requestEntity(offerJson), String.class);
@@ -69,6 +72,45 @@ public class OfferServiceComponentTest {
         // assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(offerJson, response.getBody());
+    }
+
+    @Test
+    public void shouldReceiveSuccessFromGetById() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final String description = "some-description";
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        final String expectedJson = String.format("{\"id\":\"%s\",\"description\":\"%s\",\"price\":%s,\"currency\":\"%s\",\"expiryTime\":\"%s\"}", id, description, price, currency, expiryTime);
+        offerRepository.create(new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime)));
+
+        // act
+        final ResponseEntity<String> response = restTemplate.getForEntity(String.format("/offers/%s", id.toString()), String.class);
+
+        // assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedJson, response.getBody());
+    }
+
+    @Test
+    public void shouldReceiveSuccessFromCancel() {
+
+        // arrange
+        final UUID id = UUID.randomUUID();
+        final String description = "some-description";
+        final String price = "100.00";
+        final String currency = "GBP";
+        final String expiryTime = "2018-07-28T22:25:51Z";
+        offerRepository.create(new Offer(id, description, new BigDecimal(price), Currency.getInstance(currency), Instant.parse(expiryTime)));
+
+        // act
+        final ResponseEntity<String> response = restTemplate.exchange(String.format("/offers/%s", id.toString()), HttpMethod.DELETE, null, String.class);
+
+        // assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(null, response.getBody());
     }
 
     private HttpEntity<String> requestEntity(final String body) {

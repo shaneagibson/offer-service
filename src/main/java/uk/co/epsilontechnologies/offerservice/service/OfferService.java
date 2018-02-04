@@ -12,4 +12,6 @@ public interface OfferService {
 
     Offer getById(UUID id);
 
+    void cancel(UUID id);
+
 }

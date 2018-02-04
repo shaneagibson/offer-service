@@ -1,7 +1,6 @@
 package uk.co.epsilontechnologies.offerservice.controller;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +19,14 @@ public abstract class AbstractController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Error handleIllegalArgumentException(final IllegalArgumentException e) {
+        log.warn(e.getMessage(), e);
+        return new Error(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Error handleIllegalStateException(final IllegalStateException e) {
         log.warn(e.getMessage(), e);
         return new Error(e.getMessage());
     }
